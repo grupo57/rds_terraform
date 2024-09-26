@@ -21,6 +21,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
+      - name: Configure AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Run Terraform fmt -check
         run: terraform fmt -check
 
@@ -32,12 +37,23 @@ jobs:
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
+        env:
+          DB_USERNAME_DEV: ${{ secrets.DB_USERNAME_DEV }}
+          DB_PASSWORD_DEV: ${{ secrets.DB_PASSWORD_DEV }}
+          DB_USERNAME_PROD: ${{ secrets.DB_USERNAME_PROD }}
+          DB_PASSWORD_PROD: ${{ secrets.DB_PASSWORD_PROD }}
         run: terraform plan -var="environment=${{ github.ref_name }}"
 
       - name: Terraform Apply Dev
         if: github.ref_name == 'dev' && github.event_name == 'push'
+        env:
+          DB_USERNAME_DEV: ${{ secrets.DB_USERNAME_DEV }}
+          DB_PASSWORD_DEV: ${{ secrets.DB_PASSWORD_DEV }}
         run: terraform apply -auto-approve -var="environment=dev"
 
       - name: Terraform Apply Prod
         if: github.ref_name == 'main' && github.event_name == 'push'
+        env:
+          DB_USERNAME_PROD: ${{ secrets.DB_USERNAME_PROD }}
+          DB_PASSWORD_PROD: ${{ secrets.DB_PASSWORD_PROD }}
         run: terraform apply -auto-approve -var="environment=prod"
