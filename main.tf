@@ -42,25 +42,25 @@ output "prod_db_endpoint" {
 }
 
 variable "region" {
-  type        = string
+  type = string
 }
 
 variable "dev_db_username" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "dev_db_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "prod_db_username" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "prod_db_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
