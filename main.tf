@@ -8,8 +8,8 @@ resource "aws_db_instance" "grupo57_dev" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  username             = "dev_user"
-  password             = "dev_password"
+  username             = var.dev_db_username
+  password             = var.dev_db_password
   db_subnet_group_name = "default"
   publicly_accessible  = false
   skip_final_snapshot  = true
@@ -23,8 +23,8 @@ resource "aws_db_instance" "grupo57" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  username             = "prod_user"
-  password             = "prod_password"
+  username             = var.prod_db_username
+  password             = var.prod_db_password
   db_subnet_group_name = "default"
   publicly_accessible  = false
   skip_final_snapshot  = true
@@ -42,6 +42,25 @@ output "prod_db_endpoint" {
 }
 
 variable "region" {
-  type        = string
-  default     = "us-east-1"
+  type = string
+}
+
+variable "dev_db_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "dev_db_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "prod_db_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "prod_db_password" {
+  type      = string
+  sensitive = true
 }
