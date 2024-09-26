@@ -43,7 +43,7 @@ jobs:
           DB_PASSWORD_DEV: ${{ secrets.DB_PASSWORD_DEV }}
           DB_USERNAME_PROD: ${{ secrets.DB_USERNAME_PROD }}
           DB_PASSWORD_PROD: ${{ secrets.DB_PASSWORD_PROD }}
-        run: terraform plan -var="environment=${{ github.ref_name }}"
+        run: terraform plan -var="environment=${{ github.base_ref == 'main' && 'prod' || 'dev' }}"
 
       - name: Terraform Apply Dev
         if: github.ref_name == 'dev' && github.event_name == 'push'
