@@ -1,3 +1,4 @@
+# Configura o provedor da AWS e a região onde os recursos serão criados
 provider "aws" {
   region = "us-east-1"
 }
@@ -7,8 +8,8 @@ resource "aws_db_instance" "grupo57_dev" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  username             = var.db_username_dev
-  password             = var.db_password_dev
+  username             = "dev_user"
+  password             = "dev_password"
   db_subnet_group_name = "default"
   publicly_accessible  = false
   skip_final_snapshot  = true
@@ -22,8 +23,8 @@ resource "aws_db_instance" "grupo57" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t3.micro"
-  username             = var.db_username_prod
-  password             = var.db_password_prod
+  username             = "prod_user"
+  password             = "prod_password"
   db_subnet_group_name = "default"
   publicly_accessible  = false
   skip_final_snapshot  = true
@@ -41,22 +42,6 @@ output "prod_db_endpoint" {
 }
 
 variable "region" {
-  type    = string
-  default = "us-east-1"
-}
-
-variable "db_username_dev" {
-  type = string
-}
-
-variable "db_password_dev" {
-  type = string
-}
-
-variable "db_username_prod" {
-  type = string
-}
-
-variable "db_password_prod" {
-  type = string
+  type        = string
+  default     = "us-east-1"
 }
