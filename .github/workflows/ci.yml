@@ -17,20 +17,19 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        if: "contains(github.event.pull_request.changed_files, '.tf')"
 
-      - name: Run Terraform fmt -check
-        run: terraform fmt -check
+      - name: Run Terraform fmt
+        run: terraform fmt
+        if: "contains(github.event.pull_request.changed_files, '.tf')"
 
-      - name: Terraform Init
+      - name: Run Terraform init
         run: terraform init
+        if: "contains(github.event.pull_request.changed_files, '.tf')"
 
-      - name: Terraform Apply for Dev
-        if: github.event.pull_request.merged == true && github.base_ref == 'dev'
-        run: terraform apply -auto-approve
-
-      - name: Terraform Apply for Prod
-        if: github.event.pull_request.merged == true && github.base_ref == 'main'
-        run: terraform apply -auto-approve
+      - name: Run Terraform plan
+        run: terraform plan
+        if: "contains(github.event.pull_request.changed_files, '.tf')"
 
       - name: Notify Success
         if: success()
