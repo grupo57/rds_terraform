@@ -1,4 +1,4 @@
-name: CI for Pull Request Approval  # Nome do workflow visível na aba de Actions do GitHub.
+name: Terraform CI
 
 on:
   pull_request:
@@ -8,23 +8,34 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # O pipeline será executado em uma máquina virtual com o Ubuntu mais recente.
+  terraform:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository  # Passo para clonar o código do repositório.
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Setup Terraform  # Passo para configurar o Terraform no ambiente de CI.
-        uses: hashicorp/setup-terraform@v2
-        # Executa apenas se houver arquivos .tf no repositório
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: 1.4.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Run Terraform fmt
+        run: terraform fmt -check
         if: "contains(github.event.pull_request.changed_files, '.tf')"
 
-      - name: Run Terraform fmt -check  # Passo que roda o comando para verificar a formatação do Terraform.
-        run: terraform fmt -check  # Comando que verifica se a formatação dos arquivos .tf está correta.
-        # Executa apenas se houver arquivos .tf no repositório
-        if: "contains(github.event.pull_request.changed_files, '.tf')"
+      - name: Terraform Plan
+        run: terraform plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Notify Success  # Passo para notificar que os checks foram bem-sucedidos.
-        if: success()  # Executa este passo apenas se o passo anterior (fmt check) passar.
-        run: echo "All checks passed. Ready for approval."
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        if: github.event_name == 'push'
