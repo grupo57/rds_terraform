@@ -1,4 +1,4 @@
-name: CI for Pull Request Approval  # Nome do workflow visível na aba de Actions do GitHub.
+name: CI for Pull Request Approval
 
 on:
   pull_request:
@@ -9,22 +9,29 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # O pipeline será executado em uma máquina virtual com o Ubuntu mais recente.
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository  # Passo para clonar o código do repositório.
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Terraform  # Passo para configurar o Terraform no ambiente de CI.
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-        # Executa apenas se houver arquivos .tf no repositório
-        if: "contains(github.event.pull_request.changed_files, '.tf')"
 
-      - name: Run Terraform fmt -check  # Passo que roda o comando para verificar a formatação do Terraform.
-        run: terraform fmt -check  # Comando que verifica se a formatação dos arquivos .tf está correta.
-        # Executa apenas se houver arquivos .tf no repositório
-        if: "contains(github.event.pull_request.changed_files, '.tf')"
+      - name: Run Terraform fmt -check
+        run: terraform fmt -check
 
-      - name: Notify Success  # Passo para notificar que os checks foram bem-sucedidos.
-        if: success()  # Executa este passo apenas se o passo anterior (fmt check) passar.
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply for Dev
+        if: github.event.pull_request.merged == true && github.base_ref == 'dev'
+        run: terraform apply -auto-approve
+
+      - name: Terraform Apply for Prod
+        if: github.event.pull_request.merged == true && github.base_ref == 'main'
+        run: terraform apply -auto-approve
+
+      - name: Notify Success
+        if: success()
         run: echo "All checks passed. Ready for approval."
