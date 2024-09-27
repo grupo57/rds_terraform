@@ -1,0 +1,62 @@
+name: Terraform Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  terraform-dev:
+    name: 'RDS in dev'
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.base_ref == 'dev'
+    permissions:
+      pull-requests: write
+
+    env:
+      TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
+      TF_VAR_environment: 'dev'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.4.2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        continue-on-error: false
+
+  terraform-main:
+    name: 'RDS in prod'
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      pull-requests: write
+
+    env:
+      TF_VAR_db_username: ${{ secrets.DB_USERNAME_PROD }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD_PROD }}
+      TF_VAR_environment: 'prod'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.4.2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        continue-on-error: false
