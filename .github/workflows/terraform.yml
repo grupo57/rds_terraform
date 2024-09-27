@@ -1,20 +1,30 @@
 name: Terraform CI/CD
 
 on:
-  pull_request:
+  push:
     branches:
       - dev
       - main
 
-  push:
+  pull_request:
     branches:
       - dev
       - main
 
 jobs:
   terraform:
-    name: 'Terraform CI/CD'
+    name: 'Terraform CI RDS'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
+      TF_VAR_environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
     steps:
       - name: Checkout code
@@ -23,49 +33,67 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.0.0
+          terraform_version: 1.4.2
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
 
       - name: Terraform Init
+        id: init
         run: terraform init
 
       - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Format
-        run: terraform fmt -check
+        id: validate
+        run: terraform validate -no-color
 
       - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
         run: terraform plan
+
+      - name: Update Pull Request
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
-          TF_VAR_environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style ?\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ??\`${{ steps.init.outcome }}\`
+            #### Terraform Validation ?\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan ?\`${{ steps.plan.outcome }}\`
+            
+            <details><summary>Show Plan</summary>
+
+            \`\`\`terraform\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
 
       - name: Terraform Apply on Merge (dev)
-        if: github.ref == 'refs/heads/dev' && success()
+        if: github.ref == 'refs/heads/dev'
         run: terraform apply -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          TF_VAR_environment: dev
-          TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
 
       - name: Terraform Apply on Merge (production)
-        if: github.ref == 'refs/heads/main' && success()
+        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_VAR_environment: prod
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_PROD }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_PROD }}
-
-      - name: Fail if Terraform Apply fails
-        if: failure()
-        run: exit 1
