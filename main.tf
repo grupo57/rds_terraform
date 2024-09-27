@@ -21,7 +21,7 @@ resource "aws_db_instance" "grupo51" {
   allocated_storage    = 20
   db_name              = "grupo51-${var.environment}"
   engine               = "mysql"
-  engine_version       = "8.0 "
+  engine_version       = "8.0"
   instance_class       = "db.t3.micro"
   username             = var.db_username
   password             = var.db_password
