@@ -87,13 +87,31 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply on Merge (dev)
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev' && steps.plan.outcome == 'success'
         run: terraform apply -auto-approve
 
       - name: Terraform Apply on Merge (production)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.plan.outcome == 'success'
         run: terraform apply -auto-approve
         env:
           TF_VAR_environment: prod
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_PROD }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_PROD }}
+
+  merge:
+    name: Merge to Branch
+    needs: terraform
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && steps.terraform.outcome == 'success' }}
+    steps:
+      - name: Merge Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              merge_method: 'squash'
+            })
