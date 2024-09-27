@@ -33,14 +33,6 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check
 
-      - name: Set environment variable
-        run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then 
-            echo "TF_VAR_environment=prod" >> $GITHUB_ENV
-          else 
-            echo "TF_VAR_environment=dev" >> $GITHUB_ENV
-          fi
-
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
         run: terraform plan
@@ -50,6 +42,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
+          TF_VAR_environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
       - name: Terraform Apply (dev)
         if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
@@ -58,6 +51,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: dev
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_DEV }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
 
@@ -68,5 +62,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: prod
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_PROD }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_PROD }}
