@@ -57,7 +57,7 @@ jobs:
   terraform-dev:
     name: 'RDS in dev'
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
     permissions:
       pull-requests: write
 
@@ -85,7 +85,7 @@ jobs:
   terraform-main:
     name: 'RDS in prod'
     runs-on: ubuntu-latest
-    needs: [ terraform-dev, terraform-checks ]
+    needs: terraform-checks
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       pull-requests: write
