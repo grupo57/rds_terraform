@@ -19,12 +19,12 @@ provider "aws" {
 
 resource "aws_db_instance" "grupo51" {
   allocated_storage    = 20
+  db_name              = "grupo51-${var.environment}"
   engine               = "mysql"
-  engine_version       = "5.7 "
+  engine_version       = "8.0 "
   instance_class       = "db.t3.micro"
-  identifier           = "grupo51-${var.environment}"
   username             = var.db_username
   password             = var.db_password
-  parameter_group_name = "default.mysql5.7"
+  parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
 }
