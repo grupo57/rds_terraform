@@ -1,4 +1,4 @@
-name: Terraform
+name: Terraform checks
 
 on:
   pull_request:
@@ -13,7 +13,6 @@ env:
 
 jobs:
   terraform-checks:
-    name: 'Terraform PR Checks'
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && (github.base_ref == 'dev' || github.base_ref == 'main')
     permissions:
