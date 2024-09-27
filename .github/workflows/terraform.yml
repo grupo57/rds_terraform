@@ -34,7 +34,12 @@ jobs:
         run: terraform fmt -check
 
       - name: Set environment variable
-        run: echo "TF_VAR_environment=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}" >> $GITHUB_ENV
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then 
+            echo "TF_VAR_environment=prod" >> $GITHUB_ENV
+          else 
+            echo "TF_VAR_environment=dev" >> $GITHUB_ENV
+          fi
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
