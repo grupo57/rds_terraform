@@ -26,6 +26,9 @@ jobs:
       TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
       TF_VAR_environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
+    outputs:
+      terraform_status: ${{ steps.terraform_plan_status.outcome }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,48 +55,37 @@ jobs:
         if: github.event_name == 'pull_request'
         run: terraform plan
 
-      - name: Update Pull Request
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        env:
-          PLAN: ${{ steps.plan.outputs.stdout }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style ?\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ??\`${{ steps.init.outcome }}\`
-            #### Terraform Validation ?\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan ?\`${{ steps.plan.outcome }}\`
-            
-            <details><summary>Show Plan</summary>
-
-            \`\`\`terraform\n
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>
-
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
       - name: Terraform Plan Status
+        id: terraform_plan_status
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
       - name: Terraform Apply on Merge (dev)
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/dev' && steps.plan.outcome == 'success'
         run: terraform apply -auto-approve
 
       - name: Terraform Apply on Merge (production)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.plan.outcome == 'success'
         run: terraform apply -auto-approve
         env:
           TF_VAR_environment: prod
           TF_VAR_db_username: ${{ secrets.DB_USERNAME_PROD }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_PROD }}
+
+  merge:
+    name: Merge to Branch
+    needs: terraform
+    runs-on: ubuntu-latest
+    if: needs.terraform.outputs.terraform_status == 'success'
+    steps:
+      - name: Merge Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              merge_method: 'squash'
+            })
