@@ -6,7 +6,7 @@ on:
       - dev
       - main
   push:
-    branches:
+      branches:
       - dev
       - main
 
@@ -44,12 +44,8 @@ jobs:
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD_DEV }}
           TF_VAR_environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
-      - name: Debug event and ref
-        run: |
-          echo "Ref: ${{ github.ref }} Event: ${{ github.event_name }}"
-
       - name: Terraform Apply (dev)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push'
         run: terraform apply -auto-approve
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
