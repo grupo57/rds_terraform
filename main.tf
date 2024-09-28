@@ -28,7 +28,7 @@ resource "aws_db_instance" "grupo57_dev" {
   password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
-  identifier           = "grupo57dev"
+  identifier           = "grupo57-dev"
 
   tags = {
     Name = "grupo57_dev"
