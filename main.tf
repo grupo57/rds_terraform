@@ -17,7 +17,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_db_instance" "grupo57dev" {
+resource "aws_db_instance" "grupo57_dev" {
   count                = var.environment == "dev" ? 1 : 0
   allocated_storage    = 10
   db_name              = "grupo57_dev"
