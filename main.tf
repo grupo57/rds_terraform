@@ -28,6 +28,7 @@ resource "aws_db_instance" "grupo51_dev" {
   password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
+  identifier           = "grupo51_dev"
 
   tags = {
     Name = "grupo51_dev"
@@ -45,8 +46,9 @@ resource "aws_db_instance" "grupo51_prod" {
   password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
+  identifier           = "grupo51"
 
   tags = {
-    Name = "grupo51_prod"
+    Name = "grupo51"
   }
 }
