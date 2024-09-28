@@ -19,7 +19,7 @@ provider "aws" {
 
 resource "aws_db_instance" "grupo57_dev" {
   count                = var.environment == "dev" ? 1 : 0
-  allocated_storage    = 20
+  allocated_storage    = 10
   db_name              = "grupo57_dev"
   engine               = "mysql"
   engine_version       = "8.0"
@@ -37,7 +37,7 @@ resource "aws_db_instance" "grupo57_dev" {
 
 resource "aws_db_instance" "grupo57_prod" {
   count                = var.environment == "prod" ? 1 : 0
-  allocated_storage    = 20
+  allocated_storage    = 15
   db_name              = "grupo57"
   engine               = "mysql"
   engine_version       = "8.0"
