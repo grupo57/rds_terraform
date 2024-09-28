@@ -29,8 +29,14 @@ jobs:
         with:
           terraform_version: 1.4.2
 
+      - name: Remove count condition
+        run: sed -i 's/count.*//' main.tf
+
       - name: Terraform Init
         run: terraform init
+
+      - run: |
+          sed -i 's/resource "aws_db_instance" "grupo57_dev" {/resource "aws_db_instance" "grupo57_dev" {\n  count = var.environment == "dev" ? 1 : 0/' main.tf
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
