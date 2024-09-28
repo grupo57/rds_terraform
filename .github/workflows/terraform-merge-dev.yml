@@ -33,7 +33,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Import
-        run: terraform import aws_db_instance.grupo57_dev grupo57-dev
+        run: terraform import aws_db_instance.grupo57_dev grupo57_dev
 
       - name: Terraform Apply
         run: terraform apply -auto-approve

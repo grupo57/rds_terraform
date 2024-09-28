@@ -19,7 +19,7 @@ provider "aws" {
 
 resource "aws_db_instance" "grupo57_dev" {
   count                = var.environment == "dev" ? 1 : 0
-  allocated_storage    = 15
+  allocated_storage    = 20
   db_name              = "grupo57_dev"
   engine               = "mysql"
   engine_version       = "8.0"
@@ -28,7 +28,7 @@ resource "aws_db_instance" "grupo57_dev" {
   password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
-  identifier           = "grupo57-dev"
+  identifier           = "grupo57_dev"
 
   tags = {
     Name = "grupo57_dev"
