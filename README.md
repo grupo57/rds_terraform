@@ -1,68 +1,75 @@
-# Terraform AWS RDS Deployment
+# Projeto RDS Terraform
 
-Este projeto utiliza Terraform para gerenciar a infraestrutura de banco de dados RDS na AWS. Existem dois ambientes configurados: `dev` e `prod`.
+Este projeto utiliza Terraform para gerenciar instâncias de banco de dados RDS na AWS. Ele inclui configurações para ambientes de desenvolvimento (dev) e produção (main).
 
 ## Estrutura do Projeto
 
-- `.github/workflows/terraform-checks.yml`: Workflow do GitHub Actions para verificar a formatação e validação do Terraform em pull requests.
-- `.github/workflows/terraform-merge-dev.yml`: Workflow do GitHub Actions para aplicar mudanças no ambiente de desenvolvimento (`dev`).
-- `.github/workflows/terraform-merge-prod.yml`: Workflow do GitHub Actions para aplicar mudanças no ambiente de produção (`prod`).
-- `main.tf`: Arquivo principal do Terraform que define os recursos do RDS para os ambientes `dev` e `prod`.
+- `main.tf`: Arquivo principal contendo a definição dos recursos do Terraform.
+- `.github/workflows/`: Contém os workflows do GitHub Actions para CI/CD.
 
 ## Variáveis
 
-- `environment`: O ambiente para deploy (`dev` ou `main`).
-- `db_username`: O nome de usuário do banco de dados.
-- `db_password`: A senha do banco de dados.
+As seguintes variáveis são utilizadas no `main.tf`:
 
-## Recursos
-
-- `aws_db_instance.grupo57_dev`: Instância RDS para o ambiente de desenvolvimento.
-- `aws_db_instance.grupo57_prod`: Instância RDS para o ambiente de produção.
+- `db_name`: Nome do banco de dados.
+- `db_username`: Nome de usuário do banco de dados.
+- `db_password`: Senha do banco de dados.
+- `allocated_storage`: Armazenamento alocado para o banco de dados.
+- `engine_version`: Versão do motor do banco de dados.
+- `engine`: Motor do banco de dados (padrão: `mysql`).
+- `instance_class`: Classe da instância (padrão: `db.t3.micro`).
+- `parameter_group_name`: Nome do grupo de parâmetros (padrão: `default.mysql8.0`).
+- `skip_final_snapshot`: Pular snapshot final (padrão: `true`).
+- `apply_immediately`: Aplicar imediatamente (padrão: `true`).
 
 ## Workflows do GitHub Actions
 
-### Terraform Checks
+### `terraform-merge-prod.yml`
 
-Executa verificações de formatação e validação do Terraform em pull requests para os branches `dev` e `main`.
+Este workflow é acionado em pushs para a branch `main` e aplica as mudanças no ambiente de produção.
 
-### Terraform Merge Dev
+### `terraform-merge-dev.yml`
 
-Aplica mudanças no ambiente de desenvolvimento (`dev`) ao fazer push para o branch `dev`.
+Este workflow é acionado em pushs para a branch `dev` e aplica as mudanças no ambiente de desenvolvimento.
 
-### Terraform Merge Prod
+### `terraform-checks.yml`
 
-Aplica mudanças no ambiente de produção (`prod`) ao fazer push para o branch `main`.
+Este workflow é acionado em pull requests para as branches `dev` e `main` e realiza verificações de formatação, inicialização, validação e plano do Terraform.
 
 ## Como Usar
 
-1. **Clone o repositório:**
-   ```sh
-   git clone https://github.com/grupo57/rds_terraform.git
-   cd rds_terraform
+1. Clone o repositório:
+    ```sh
+    git clone https://github.com/seu-usuario/seu-repositorio.git
+    cd seu-repositorio
     ```
-   
-2. **Configurar variáveis de ambiente:**
-   Certifique-se de que as seguintes variáveis de ambiente estão configuradas no GitHub Secrets:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-   - `AWS_DEFAULT_REGION`
-   - `DB_USERNAME_DEV`
-   - `DB_PASSWORD_DEV`
-   - `DB_USERNAME_PROD`
-   - `DB_PASSWORD_PROD`
 
+2. Configure as variáveis de ambiente necessárias:
+    ```sh
+    export AWS_ACCESS_KEY_ID=your_access_key_id
+    export AWS_SECRET_ACCESS_KEY=your_secret_access_key
+    export AWS_DEFAULT_REGION=your_default_region
+    export TF_VAR_db_username=your_db_username
+    export TF_VAR_db_password=your_db_password
+    export TF_VAR_db_name=your_db_name
+    export TF_VAR_allocated_storage=your_allocated_storage
+    ```
 
-3. **Executar os Workflows:**
-   - Crie um pull request para o branch `dev` ou `main` para acionar o workflow de verificações.
-   - Faça push para o branch `dev` para aplicar mudanças no ambiente de desenvolvimento.
-   - Faça push para o branch `main` para aplicar mudanças no ambiente de produção.
+3. Inicialize o Terraform:
+    ```sh
+    terraform init
+    ```
 
-## Requisitos
+4. Selecione o workspace apropriado:
+    ```sh
+    terraform workspace select dev || terraform workspace new dev
+    ```
 
-- Terraform v1.4.2
-- Conta AWS com permissões para gerenciar RDS
+5. Aplique as mudanças:
+    ```sh
+    terraform apply -auto-approve
+    ```
 
 ## Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
