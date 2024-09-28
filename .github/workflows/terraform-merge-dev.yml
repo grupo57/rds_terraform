@@ -32,15 +32,8 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Import or Create
-        run: |
-          if ! terraform state show aws_db_instance.grupo57_dev; then
-            if aws rds describe-db-instances --db-instance-identifier grupo57-dev; then
-              terraform import aws_db_instance.grupo57_dev grupo57-dev
-            else
-              echo "Instance does not exist, creating a new one."
-            fi
-          fi
+      - name: Terraform Plan
+        run: terraform plan
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
