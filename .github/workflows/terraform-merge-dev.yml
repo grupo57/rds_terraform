@@ -32,15 +32,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Remove count condition
-        run: sed -i 's/count.*//' main.tf
-
-      - name: Terraform Import
-        run: terraform import aws_db_instance.grupo57_dev grupo57-dev
-
-      - run: |
-          sed -i 's/resource "aws_db_instance" "grupo57_dev" {/resource "aws_db_instance" "grupo57_dev" {\n  count                = var.environment == "dev" ? 1 : 0/' main.tf
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
         continue-on-error: false
