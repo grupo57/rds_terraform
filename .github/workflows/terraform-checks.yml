@@ -42,7 +42,7 @@ jobs:
         run: terraform init
 
       - name: Select Terraform Workspace
-        run: terraform workspace select ${{ github.base_ref }} || terraform workspace new ${{ github.base_ref }}
+        run: terraform workspace new ${{ github.base_ref }}
 
       - name: Terraform Validate
         id: validate
@@ -51,15 +51,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
-      
-      - name: List Files in Directory
-        run: ls -la
-
-      - name: pwd
-        run: pwd
 
       - name: Upload Terraform State
         uses: actions/upload-artifact@v3
         with:
           name: terraform-tfstate
           path: terraform.tfstate.d
+          include-hidden-files: false
