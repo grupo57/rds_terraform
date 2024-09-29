@@ -30,6 +30,7 @@ jobs:
         with:
           name: terraform-state
           path: terraform.tfstate.d
+        continue-on-error: true
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
