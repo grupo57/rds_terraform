@@ -53,10 +53,13 @@ jobs:
         run: terraform plan
       
       - name: List Files in Directory
-        run: ls -la ./terraform.tfstate.d
+        run: ls -la
+
+      - name: pwd
+        run: pwd
 
       - name: Upload Terraform State
         uses: actions/upload-artifact@v3
         with:
           name: terraform-tfstate
-          path: terraform.tfstate.d/**
+          path: terraform.tfstate.d
