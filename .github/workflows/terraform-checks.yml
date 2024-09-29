@@ -48,6 +48,3 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
-
-      - name: Terraform Outputs
-        run: terraform output
