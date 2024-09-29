@@ -25,15 +25,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Terraform
-        uses: actions/cache@v3
+      - name: Download Terraform State
+        uses: actions/download-artifact@v3
         with:
-          path: |
-            .terraform
-            terraform.tfstate.d
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
+          name: terraform-state
+          path: terraform.tfstate.d
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -49,3 +45,9 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         continue-on-error: false
+
+      - name: Upload Terraform State
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-state
+          path: terraform.tfstate.d
