@@ -44,7 +44,7 @@ jobs:
 #        run: terraform init
 
       - name: Select Terraform Workspace
-        run: terraform workspace select prod # || terraform workspace new prod
+        run: terraform workspace select prod || terraform workspace new prod
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
