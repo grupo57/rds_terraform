@@ -1,2 +1,21 @@
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.*
+
+# Terraform configuration directory
 .terraform/
 .terraform.lock.hcl
+
+# Local environment variables
+*.env
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
+
+# IDE specific files (PhpStorm)
+.idea/
+*.iml
