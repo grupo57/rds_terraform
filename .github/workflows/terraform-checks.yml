@@ -28,6 +28,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: |
+            .terraform
+            terraform.tfstate.d
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -42,7 +52,7 @@ jobs:
         run: terraform init
 
       - name: Select Terraform Workspace
-        run: terraform workspace new ${{ github.base_ref }}
+        run: terraform workspace select ${{ github.base_ref }} || terraform workspace new ${{ github.base_ref }}
 
       - name: Terraform Validate
         id: validate
@@ -51,9 +61,3 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
-
-      - name: Upload Terraform State
-        uses: actions/upload-artifact@v3
-        with:
-          name: terraform-tfstate
-          path: terraform.tfstate.d
