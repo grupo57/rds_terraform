@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: terraform-state
-          path: terraform.tfstate.d
+          path: ../../terraform.tfstate.d
