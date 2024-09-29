@@ -1,6 +1,6 @@
 variable "db_name" {
-    description = "The database name"
-    type        = string
+  description = "The database name"
+  type        = string
 }
 
 variable "db_username" {
@@ -14,44 +14,44 @@ variable "db_password" {
 }
 
 variable "allocated_storage" {
-    description = "The allocated storage for the database"
-    type        = number
+  description = "The allocated storage for the database"
+  type        = number
 }
 
 variable "engine_version" {
-  default = "8.0"
+  default     = "8.0"
   description = "The workspace to deploy (dev or prod)"
   type        = string
 }
 
 variable "engine" {
-    default = "mysql"
-    description = "The database engine"
-    type        = string
+  default     = "mysql"
+  description = "The database engine"
+  type        = string
 }
 
 variable "instance_class" {
-    default = "db.t3.micro"
-    description = "The instance class"
-    type        = string
+  default     = "db.t3.micro"
+  description = "The instance class"
+  type        = string
 }
 
 variable "parameter_group_name" {
-    default = "default.mysql8.0"
-    description = "The parameter group name"
-    type        = string
+  default     = "default.mysql8.0"
+  description = "The parameter group name"
+  type        = string
 }
 
 variable "skip_final_snapshot" {
-    default = true
-    description = "Skip final snapshot"
-    type        = bool
+  default     = true
+  description = "Skip final snapshot"
+  type        = bool
 }
 
 variable "apply_immediately" {
-    default = true
-    description = "Apply immediately"
-    type        = bool
+  default     = true
+  description = "Apply immediately"
+  type        = bool
 }
 
 resource "aws_db_instance" "grupo57_db" {
