@@ -31,9 +31,9 @@ jobs:
           path: |
             .terraform
             terraform.tfstate.d
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          key: ${{ runner.os }}-terraform-prod-${{ hashFiles('**/*.tf') }}
           restore-keys: |
-            ${{ runner.os }}-terraform-
+            ${{ runner.os }}-terraform-prod-
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
