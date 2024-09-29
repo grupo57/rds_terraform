@@ -34,6 +34,7 @@ jobs:
           path: |
             .terraform
             terraform.tfstate.d
+            .terraform.lock.hcl
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
           restore-keys: |
             ${{ runner.os }}-terraform-
