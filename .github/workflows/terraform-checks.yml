@@ -51,6 +51,9 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
+      
+      - name: Print working directory
+        run: pwd
 
       - name: Upload Terraform State
         uses: actions/upload-artifact@v3
