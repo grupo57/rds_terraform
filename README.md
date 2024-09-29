@@ -41,21 +41,21 @@ Este workflow é acionado em pull requests para as branches `dev` e `main` e real
 As seguintes variáveis de ambiente podem ser configuradas no GitHub Actions:
 
 Para acesso à AWS:
-- `AWS_ACCESS_KEY_ID`: Chave de acesso da AWS.
-- `AWS_SECRET_ACCESS_KEY`: Chave secreta da AWS.
-- `AWS_DEFAULT_REGION`: Região padrão da AWS.
+- `AWS_ACCESS_KEY_ID`: Chave de acesso da AWS (definir em secrets).
+- `AWS_SECRET_ACCESS_KEY`: Chave secreta da AWS (definir em secrets).
+- `AWS_DEFAULT_REGION`: Região padrão da AWS (definir em secrets).
 
 Configurações para banco de desenvolvimento (dev):
-- `DB_USERNAME_DEV`: Nome de usuário do banco de dados de desenvolvimento.
-- `DB_PASSWORD_DEV`: Senha do banco de dados de desenvolvimento.
-- `DB_NAME_DEV`: Nome do banco de dados de desenvolvimento.
-- `ALLOCATED_STORAGE_DEV`: Armazenamento alocado para o banco de dados de desenvolvimento.
+- `DB_USERNAME_DEV`: Nome de usuário do banco de dados de desenvolvimento (definir em secrets).
+- `DB_PASSWORD_DEV`: Senha do banco de dados de desenvolvimento (definir em secrets).
+- `DB_NAME_DEV`: Nome do banco de dados de desenvolvimento (definir em variables).
+- `ALLOCATED_STORAGE_DEV`: Armazenamento alocado para o banco de dados de desenvolvimento (definir em variables).
 
 Configurações para banco de produção (prod):
-- `DB_USERNAME_PROD`: Nome de usuário do banco de dados de produção.
-- `DB_PASSWORD_PROD`: Senha do banco de dados de produção.
-- `DB_NAME_PROD`: Nome do banco de dados de produção.
-- `ALLOCATED_STORAGE_PROD`: Armazenamento alocado para o banco de dados de produção.
+- `DB_USERNAME_PROD`: Nome de usuário do banco de dados de produção (definir no secrets).
+- `DB_PASSWORD_PROD`: Senha do banco de dados de produção (definir no secrets).
+- `DB_NAME_PROD`: Nome do banco de dados de produção (definir no secrets).
+- `ALLOCATED_STORAGE_PROD`: Armazenamento alocado para o banco de dados de produção (definido em variables).
 
 ## Como Usar
 
