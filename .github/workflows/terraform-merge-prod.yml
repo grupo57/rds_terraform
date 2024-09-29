@@ -25,16 +25,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+#      - name: Cache Terraform
+#        uses: actions/cache@v3
+#        with:
+#          path: |
+#            .terraform
+#            terraform.tfstate.d
+#          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+#          restore-keys: |
+#            ${{ runner.os }}-terraform-
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.4.2
 
-      - name: Terraform Init
-        run: terraform init
+#      - name: Terraform Init
+#        run: terraform init
 
       - name: Select Terraform Workspace
-        run: terraform workspace select prod || terraform workspace new prod
+        run: terraform workspace select prod # || terraform workspace new prod
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
