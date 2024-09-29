@@ -41,6 +41,9 @@ jobs:
         id: init
         run: terraform init
 
+      - name: Select Terraform Workspace
+        run: terraform workspace new ${{ github.base_ref }}
+
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
@@ -48,3 +51,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan
+
+      - name: Upload Terraform State
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-tfstate
+          path: terraform.tfstate.d
+          include-hidden-files: false
